@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4; /* Background color for the entire page */
+    }
+
+    #formContainer {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin: 20px auto;
+      max-width: 80%;
+      height: 100vh;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    button:disabled {
+      background-color: #ccc; /* Dimmed color for disabled button */
+    }
+
+    label, input, select, button {
+      width: 100%;
+      box-sizing: border-box;
+      margin: 15px 0;
+      font-size: 45px;
+      animation: fadeIn 0.5s ease-in-out;
+      animation-fill-mode: both;
+    }
+
+    /* Customize animation delay for each form element */
+    label {
+      animation-delay: 0.5s;
+    }
+
+    select {
+      animation-delay: 0.2s;
+    }
+
+    input {
+      animation-delay: 0.4s;
+    }
+
+    select {
+      height: 75px;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 10px;
+      width: 50px;
+      height: 50px;
+    }
+
+    button {
+      padding: 20px;
+      cursor: pointer;
+      background-color: #2947c7; /* Theme color */
+      color: #ffffff; /* Text color */
+      border: none;
+      border-radius: 10px;
+      font-size: 50px;
+      animation-delay: 0.6s;
+    }
+  </style>
+</head>
+<body>
+  <div id="formContainer">
+    <script>
+      function validate(element) {
+        var valInput = document.getElementById(element);
+        valInput.value = valInput.value.replace(/[^0-9.]/g, ''); // Allow only numbers and decimal point
+      }
+
+      function enableButton() {
+          document.getElementById('btnSubmit').disabled = false;
+      }
+
+      function submitData() {
+        var teamSelect = document.getElementById('teamSelect');
+        var ampNotesAuton = document.getElementById('ampNotesAuton');
+        var ampNotesTeleOp = document.getElementById('ampNotesTeleOp');
+        var speakerNotesAuton = document.getElementById('speakerNotesAuton');
+        var speakerNotesTeleOp = document.getElementById('speakerNotesTeleOp');
+        var amplifiedNotes = document.getElementById('amplifiedNotes');
+        var stageNotes = document.getElementById('stageNotes');
+
+        if (teamSelect.value === "" || ampNotesAuton.value === "" || ampNotesTeleOp.value === "" || speakerNotesAuton.value === "" || speakerNotesTeleOp.value === "" || amplifiedNotes.value === "" || stageNotes.value === "") {
+          alert("Please fill in all the fields before submitting.");
+          return;
+        }
+
+        var teamSelected = teamSelect.options[teamSelect.selectedIndex].text;
+        var ampNotesAutonInput = parseFloat(ampNotesAuton.value) || 0;
+        var ampNotesTeleOpInput = parseFloat(ampNotesTeleOp.value) || 0;
+        var speakerNotesAutonInput = parseFloat(speakerNotesAuton.value) || 0;
+        var speakerNotesTeleOpInput = parseFloat(speakerNotesTeleOp.value) || 0;
+        var amplifiedNotesInput = parseFloat(amplifiedNotes.value) || 0;
+        var stageNotesInput = parseFloat(stageNotes.value) || 0;
+        var coopPointInput = document.getElementById('coopPoint').checked;
+        var robotHangInput = document.getElementById('robotHang').checked;
+        google.script.run.recordTime(teamSelected, ampNotesAutonInput, ampNotesTeleOpInput, speakerNotesAutonInput, speakerNotesTeleOpInput, amplifiedNotesInput, stageNotesInput, coopPointInput, robotHangInput);
+        document.getElementById('btnSubmit').disabled = true;
+
+        teamSelect.value = '';
+        ampNotesAuton.value = '';
+        ampNotesTeleOp.value = '';
+        speakerNotesAuton.value = '';
+        speakerNotesTeleOp.value = '';
+        amplifiedNotes.value = '';
+        stageNotes.value = '';
+        document.getElementById('coopPoint').checked = false;
+        document.getElementById('robotHang').checked = false;
+      }
+    </script>
+
+    <label for="teamSelect">Select Team:</label>
+    <select id="teamSelect" onchange="enableButton()">
+      <option value="" disabled selected>Pick Team</option>
+      <? for (var i = 0; i < teamList.length; i++) { ?>
+        <option value="<?= i + 1 ?>"><?= teamList[i] ?></option>
+      <? } ?>
+    </select>
+
+    <label for="ampNotesAuton">Amp Notes Scored - Auton:</label>
+    <input type="number" id="ampNotesAuton" oninput="validate(id)"/>
+
+    <label for="ampNotesTeleOp">Amp Notes Scored - TeleOp:</label>
+    <input type="number" id="ampNotesTeleOp" oninput="validate(id)"/>
+
+    <label for="speakerNotesAuton">Speaker Notes Scored - Auton:</label>
+    <input type="number" id="speakerNotesAuton" oninput="validate(id)"/>
+
+    <label for="speakerNotesTeleOp">Speaker Notes Scored - TeleOp:</label>
+    <input type="number" id="speakerNotesTeleOp" oninput="validate(id)"/>
+
+    <label for="amplifiedNotes">Amplified Speaker Notes Scored:</label>
+    <input type="number" id="amplifiedNotes" oninput="validate(id)"/>
+
+    <label for="stageNotes">Stage Notes Scored:</label>
+    <input type="number" id="stageNotes" oninput="validate(id)"/>
+    
+    <input type="checkbox" id="coopPoint" name="coopPoint">
+    <label for="coopPoint"> Cooperation Point Scored</label>
+    
+    <br>
+
+    <input type="checkbox" id="robotHang" name="robotHang">
+    <label for="robotHang"> Able to Hang</label>
+
+    <button id="btnSubmit" onclick="submitData()">Submit</button>
+  </div>
+</body>
+</html>

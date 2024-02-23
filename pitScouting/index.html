@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4; /* Background color for the entire page */
+    }
+
+    #formContainer {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin: 20px auto;
+      max-width: 80%;
+      height: 100vh;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    button:disabled {
+      background-color: #ccc; /* Dimmed color for disabled button */
+    }
+
+    label, input, select, button {
+      width: 100%;
+      box-sizing: border-box;
+      margin: 15px 0;
+      font-size: 45px;
+      animation: fadeIn 0.5s ease-in-out;
+      animation-fill-mode: both;
+    }
+
+    /* Customize animation delay for each form element */
+    label {
+      animation-delay: 0.5s;
+    }
+
+    select {
+      animation-delay: 0.2s;
+    }
+
+    input {
+      animation-delay: 0.4s;
+    }
+
+    select {
+      height: 75px;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 10px;
+      width: 50px;
+      height: 50px;
+    }
+
+    button {
+      padding: 20px;
+      cursor: pointer;
+      background-color: #2947c7; /* Theme color */
+      color: #ffffff; /* Text color */
+      border: none;
+      border-radius: 10px;
+      font-size: 50px;
+      animation-delay: 0.6s;
+    }
+  </style>
+</head>
+<body>
+  <div id="formContainer">
+    <script>
+      function validate(element) {
+        var valInput = document.getElementById(element);
+        valInput.value = valInput.value.replace(/[^0-9.]/g, ''); // Allow only numbers and decimal point
+      }
+
+      function enableButton() {
+          document.getElementById('btnSubmit').disabled = false;
+      }
+
+      function submitData() {
+        var teamSelect = document.getElementById('teamSelect');
+        var chassis = document.getElementById('chassis');
+        // var ampOut = document.getElementById('ampOut');
+        // var speakerOut = document.getElementById('speakerOut');
+        // var stageOut = document.getElementById('stageOut');
+        // var robotHang = document.getElementById('robotHang');
+        var cycleTiming = document.getElementById('cycleTiming');
+
+        if (teamSelect.value === "" || chassis.value === "" || cycleTiming.value === "") {
+          alert("Please fill in all the fields before submitting.");
+          return;
+        }
+
+        var teamSelected = teamSelect.options[teamSelect.selectedIndex].text;
+        var chassisInput = chassis.options[chassis.selectedIndex].text;
+        var ampOutInput = document.getElementById('ampOut').checked;
+        var speakerOutInput = document.getElementById('speakerOut').checked;
+        var stageOutInput = document.getElementById('stageOut').checked;
+        var robotHangInput = document.getElementById('robotHang').checked;
+        var cycleTimingInput = parseFloat(cycleTiming.value) || 0;
+        google.script.run.recordTime(teamSelected, chassisInput, ampOutInput, speakerOutInput, stageOutInput, robotHangInput, cycleTimingInput);
+        document.getElementById('btnSubmit').disabled = true;
+
+        teamSelect.value = '';
+        chassis.value = '';
+        ampOut.value = '';
+        speakerOut.value = '';
+        stageOut.value = '';
+        robotHang.value = '';
+        cycleTiming.value = '';
+      }
+    </script>
+
+    <label for="teamSelect">Select Team:</label>
+    <select id="teamSelect" onchange="enableButton()">
+      <option value="" disabled selected>Pick Team</option>
+      <? for (var i = 0; i < teamList.length; i++) { ?>
+        <option value="<?= i + 1 ?>"><?= teamList[i] ?></option>
+      <? } ?>
+    </select>
+
+    <label for="chassis">Type of Mechanism:</label>
+    <select name="chassis" id="chassis">
+      <option value="" disabled selected>Pick Mechanism</option>
+      <option value="swerve">Swerve</option>
+      <option value="tank">Tank</option>
+    </select>
+    
+    <input type="checkbox" id="ampOut" name="ampOut">
+    <label for="ampOut"> Amp Scoring capability</label>
+    
+    <br>
+
+    <input type="checkbox" id="speakerOut" name="speakerOut">
+    <label for="speakerOut"> Speaker Scoring capability</label>
+
+    <br>
+
+    <input type="checkbox" id="stageOut" name="stageOut">
+    <label for="stageOut"> Stage Scoring capability</label>
+
+    <br>
+
+    <input type="checkbox" id="robotHang" name="robotHang">
+    <label for="robotHang"> Hanging capability</label>
+
+    <br>
+    <br>
+    <br>
+
+    <label for="cycleTiming">Cycle Timing:</label>
+    <input type="number" id="cycleTiming" oninput="validate(id)"/>
+
+    <button id="btnSubmit" onclick="submitData()">Submit</button>
+  </div>
+</body>
+</html>
